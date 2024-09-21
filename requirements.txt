@@ -1,0 +1,10 @@
+langchain
+huggingface_hub
+pinecone
+pinecone_client
+unstructured
+sentence_transformers
+pytesseract
+langchain_community
+chromadb
+google-generativeai
