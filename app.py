@@ -14,7 +14,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 st.title("Hybrid-RAG APP ")
 
-# choere_api_key = st.sidebar.text_input("Cohere-Api-Key", type="password" , key = 'api_key_input')
+
 
 upload_option = st.selectbox("Do you want to upload a single PDF or a folder of PDFs:",
                              ("Single PDF", "Folder of PDFs"))
@@ -59,13 +59,14 @@ if upload_option == "Single PDF":
         embeddings = HuggingFaceBgeEmbeddings(
             model_name=model_name,
             encode_kwargs=model_kwargs,
-            model_kwargs={'device': 'cpu'},
+            model_kwargs={'device': 'auto'},
         )
         import os
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        import os
+        api_key = os.environ.get("PINECONE_API_KEY")
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
@@ -91,27 +92,28 @@ if upload_option == "Single PDF":
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        import os
+        api_key = os.environ.get("PINECONE_API_KEY")
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
         if index_name not in pc.list_indexes().names():
             pc.create_index(
                 name=index_name,
-                dimension=384,  # Make sure this matches your embedding dimension
+                dimension=384,  
                 metric='dotproduct',
                 spec=ServerlessSpec(cloud='aws', region='us-east-1'),
             )
 
-        # Access the index
+        
         index = pc.Index(index_name)
 
         retriever1 = vectorstore.as_retriever(search_kwargs={"k": 3})
         retriever2 = LangChainPinecone(
 
-            index=index,  # Pinecone index object
+            index=index,  
             embedding=embeddings.embed_query,
-            text_key="vectors"  # The field name where your chunks are stored
+            text_key="vectors"  
         ).as_retriever(search_kwargs={"k": 3})
 
         ensambel_reteriever = EnsembleRetriever(
@@ -119,15 +121,15 @@ if upload_option == "Single PDF":
             weight=[0.6, 0.4]
 
         )
-        # Access the index
+        
         index = pc.Index(index_name)
 
         retriever1 = vectorstore.as_retriever(search_kwargs={"k": 3})
         retriever2 = LangChainPinecone(
 
-            index=index,  # Pinecone index object
+            index=index,  
             embedding=embeddings.embed_query,
-            text_key="vectors"  # The field name where your chunks are stored
+            text_key="vectors"  
         ).as_retriever(search_kwargs={"k": 3})
 
         ensambel_reteriever = EnsembleRetriever(
@@ -138,7 +140,7 @@ if upload_option == "Single PDF":
         import google.generativeai as genai
         import os
 
-        api_key = "AIzaSyCk3ygB1GddNI6xOZ7AZjmOT2ZoNSZpIXk"
+        api_key = os.environ.get("GOOGLE_API_KEY")
         genai.configure(api_key=api_key)
 
         from langchain_google_genai import ChatGoogleGenerativeAI
@@ -170,28 +172,13 @@ if upload_option == "Single PDF":
 
         chain = RunnableMap({
             "context": lambda x: ensambel_reteriever.get_relevant_documents(x["query"]),
-            "query": lambda x: x["query"],  # Ensure "query" key is included here
-            "input": lambda x: x["query"]  # Also ensure "query" key is included here
+            "query": lambda x: x["query"],  
+            "input": lambda x: x["query"]  
         }) | prompt | llm | output_parser
 
         import logging
 
         logging.getLogger("langchain_community.vectorstores.pinecone").setLevel(logging.ERROR)
-
-    # user_input = st.text_input("Enter Your Query Here:")
-    # if st.button("Answer:"):
-    #     if user_input:
-    #         with st.spinner("Processing..."):
-    #             try:
-    #                 result = chain.invoke({"query": user_input})  # Provide "query" key here
-    #
-    #                 st.write("### Answer ###")
-    #                 st.write(result)
-    #             except Exception as ex:
-    #                 st.error(f'Error: {str(ex)}')
-    #
-    #     else:
-    #         st.warning("Enter the Query First...")
 
 elif upload_option == "Folder of PDFs":
     from langchain.document_loaders import PyPDFDirectoryLoader
@@ -239,9 +226,7 @@ elif upload_option == "Folder of PDFs":
         )
         import os
         from pinecone import Pinecone, ServerlessSpec
-
-        # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        api_key = os.environ.get("PINECONE_API_KEY")
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
@@ -267,29 +252,26 @@ elif upload_option == "Folder of PDFs":
         import os
         from langchain.vectorstores import Pinecone as LangChainPinecone
         from pinecone import Pinecone, ServerlessSpec
-
-        # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
         if index_name not in pc.list_indexes().names():
             pc.create_index(
                 name=index_name,
-                dimension=384,  # Make sure this matches your embedding dimension
+                dimension=384,  
                 metric='dotproduct',
                 spec=ServerlessSpec(cloud='aws', region='us-east-1'),
             )
 
-        # Access the index
+       
         index = pc.Index(index_name)
 
         retriever1 = vectorstore.as_retriever(search_kwargs={"k": 3})
         retriever2 = LangChainPinecone(
 
-            index=index,  # Pinecone index object
+            index=index,  
             embedding=embeddings.embed_query,
-            text_key="vectors"  # The field name where your chunks are stored
+            text_key="vectors" 
         ).as_retriever(search_kwargs={"k": 3})
 
         ensambel_reteriever = EnsembleRetriever(
@@ -300,7 +282,7 @@ elif upload_option == "Folder of PDFs":
         import google.generativeai as genai
         import os
 
-        api_key = "AIzaSyCk3ygB1GddNI6xOZ7AZjmOT2ZoNSZpIXk"
+        os.environ.get("GOOGLE_API_KEY")
         genai.configure(api_key=api_key)
         from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -329,8 +311,8 @@ elif upload_option == "Folder of PDFs":
 
         chain = RunnableMap({
             "context": lambda x: ensambel_reteriever.get_relevant_documents(x["query"]),
-            "query": lambda x: x["query"],  # Ensure "query" key is included here
-            "input": lambda x: x["query"]  # Also ensure "query" key is included here
+            "query": lambda x: x["query"],  
+            "input": lambda x: x["query"]  
         }) | prompt | llm | output_parser
 
         import logging
@@ -342,7 +324,7 @@ if st.button("Answer:"):
     if user_input:
         with st.spinner("Processing..."):
             try:
-                result = chain.invoke({"query": user_input})  # Provide "query" key here
+                result = chain.invoke({"query": user_input})
 
                 st.write("### Answer ###")
                 st.write(result)
