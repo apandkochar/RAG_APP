@@ -5,7 +5,6 @@ import tempfile
 import streamlit as st
 import pinecone
 import os
-
 from langchain_community.vectorstores import Pinecone, Chroma
 from langchain.prompts import PromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
@@ -15,8 +14,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 st.title("Hybrid-RAG APP ")
-
-#choere_api_key = st.sidebar.text_input("Cohere-Api-Key", type="password" , key = 'api_key_input')
 
 upload_option = st.selectbox("Do you want to upload a single PDF or a folder of PDFs:", ("Single PDF", "Folder of PDFs"))
 
@@ -65,7 +62,7 @@ if upload_option == "Single PDF":
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        api_key = " "
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
@@ -91,7 +88,7 @@ if upload_option == "Single PDF":
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        api_key = " "
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
@@ -238,7 +235,7 @@ elif upload_option == "Folder of PDFs":
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        api_key = " "
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
@@ -266,7 +263,7 @@ elif upload_option == "Folder of PDFs":
         from pinecone import Pinecone, ServerlessSpec
 
         # Initialize Pinecone client
-        api_key = "b4c3ee91-9a15-4d53-b08d-fedee4d60d1b"
+        api_key = " "
         index_name = "apurv"
         pc = Pinecone(api_key=api_key)
 
